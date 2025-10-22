@@ -271,6 +271,25 @@
             opacity: 0.5;
         }
 
+        #next-round-button {
+            margin-top: 20px;
+            padding: 10px 30px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            background-color: var(--correct-color);
+            color: var(--dark-text);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+            z-index: 11;
+        }
+        #next-round-button:hover {
+            transform: scale(1.05);
+        }
+
+
         .image-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -410,17 +429,14 @@
             text-align: center;
         }
 
-        /* === YENİ DEĞİŞİKLİK: Vurgu (animasyon) buradan kaldırıldı === */
         #player-select-text {
             font-family: 'Noto Naskh Arabic', 'Traditional Arabic', serif;
             font-size: 3.5rem;
             font-weight: bold;
             color: var(--dark-text);
             margin-bottom: 20px;
-            /* animation: zoom-fade 1.5s ease-in-out infinite; */ /* <--- SİLİNDİ */
         }
 
-        /* === YENİ DEĞİŞİKLİK: Vurgu (animasyon) buraya eklendi === */
         #start-countdown-button {
             font-size: 6rem;
             cursor: pointer;
@@ -429,7 +445,7 @@
             padding: 10px;
             color: var(--dark-text);
             transition: transform 0.2s ease-out;
-            animation: zoom-fade 1.5s ease-in-out infinite; /* <--- EKLENDİ */
+            animation: zoom-fade 1.5s ease-in-out infinite; 
         }
         #start-countdown-button:hover {
             transform: scale(1.1);
@@ -485,7 +501,7 @@
             #center-controls {
                 top: 25%;
             }
-
+            
             #audio-button {
                 width: 80px;
                 height: 80px;
@@ -493,6 +509,11 @@
             #audio-button .icon {
                 width: 35px;
                 height: 35px;
+            }
+
+            #next-round-button {
+                font-size: 2rem;
+                padding: 8px 25px;
             }
 
             .player-section {
@@ -562,7 +583,7 @@
             <div id="progress-bar">
                 <div class="progress-dot dot-small"></div>
                 <div class="progress-dot dot-medium"></div>
-                <div class="progress-dot"></div>
+                <div class.progress-dot"></div>
                 <div class="progress-dot dot-medium"></div>
                 <div class="progress-dot dot-small"></div>
             </div>
@@ -605,6 +626,7 @@
                 <svg class="icon play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
                 <svg class="icon stop-icon" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"></path></svg>
             </button>
+            <button id="next-round-button" style="display: none;">»</button>
         </div>
 
         <div id="round-timer-bar-container">
@@ -635,6 +657,8 @@
         const audioButton = document.getElementById('audio-button');
         const playIcon = audioButton.querySelector('.play-icon');
         const stopIcon = audioButton.querySelector('.stop-icon');
+
+        const nextRoundButton = document.getElementById('next-round-button');
 
         const roundTimerBarContainer = document.getElementById('round-timer-bar-container');
         const roundTimerBar = document.getElementById('round-timer-bar');
@@ -782,53 +806,56 @@
         function startGame() {
             playerSelectPrompt.style.display = 'none';
 
-            countdownDisplay.style.display = 'block';
-
-            let count = 3;
-            countdownDisplay.textContent = count;
-
-            const countdownInterval = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    countdownDisplay.textContent = count;
-                } else {
-                    clearInterval(countdownInterval);
-                    overlay.classList.remove('visible', 'transparent-bg');
-                    startMatch();
-                    toggleAudio();
-                }
-            }, 1000);
+            // 2 saniye bekle ve oyunu başlat
+            setTimeout(() => {
+                startMatch();
+                toggleAudio(); // İlk sorunun sesini otomatik başlat
+            }, 2000); // 2 saniyelik gecikme
         }
 
-        /* === YENİ DEĞİŞİKLİK: Arka planı beyazlatmak için eklendi === */
         function playInstructionAndStart() {
             startButton.style.display = 'none';
+
+            // iPad ses kilidini aç
+            correctSound.load();
+            incorrectSound.load();
+            currentAudio.load(); 
 
             try {
                 instructionSound.play().catch(e => {
                     console.error("Instruction audio failed to play, showing player select immediately:", e);
                     countdownDisplay.style.display = 'none';
                     playerSelectPrompt.style.display = 'flex';
-                    overlay.classList.remove('transparent-bg'); // <--- EKLENDİ (Beyaz Arka Plan)
+                    overlay.classList.remove('transparent-bg'); 
                 });
 
                 instructionSound.onended = () => {
                     countdownDisplay.style.display = 'none';
                     playerSelectPrompt.style.display = 'flex';
-                    overlay.classList.remove('transparent-bg'); // <--- EKLENDİ (Beyaz Arka Plan)
+                    overlay.classList.remove('transparent-bg'); 
                 };
 
             } catch (e) {
                 console.error("Error playing instruction sound, showing player select immediately:", e);
                 countdownDisplay.style.display = 'none';
                 playerSelectPrompt.style.display = 'flex';
-                overlay.classList.remove('transparent-bg'); // <--- EKLENDİ (Beyaz Arka Plan)
+                overlay.classList.remove('transparent-bg'); 
             }
         }
 
         function startCountdownAndGame() {
             playerSelectPrompt.style.display = 'none';
-            startGame();
+            
+            // iPad ses kilidini aç
+            correctSound.load();
+            incorrectSound.load();
+            currentAudio.load();
+            
+            // Tıklandığı anda overlay'i gizle
+            overlay.classList.remove('visible');
+            overlay.classList.remove('transparent-bg'); 
+            
+            startGame(); // Geri sayımı olmayan yeni fonksiyonu çağır
         }
 
 
@@ -866,7 +893,9 @@
 
             const conflictGroup1 = [1, 4, 5, 6];
             const conflictGroup2 = [7, 8];
-            const conflictGroup3 = [2, 3];
+            
+            // === YENİ DEĞİŞİKLİK: 10 eklendi ===
+            const conflictGroup3 = [2, 3, 10]; 
 
             let possibleDistractors = gameData.filter(item => {
                 const id = item.id;
@@ -874,7 +903,7 @@
 
                 if (conflictGroup1.includes(correctId) && conflictGroup1.includes(id)) return false;
                 if (conflictGroup2.includes(correctId) && conflictGroup2.includes(id)) return false;
-                if (conflictGroup3.includes(correctId) && conflictGroup3.includes(id)) return false;
+                if (conflictGroup3.includes(correctId) && conflictGroup3.includes(id)) return false; 
 
                 return true;
             });
@@ -895,7 +924,7 @@
                 if (!hasConflict && conflictGroup2.includes(distractorId) && currentOptionIds.some(id => conflictGroup2.includes(id))) {
                     hasConflict = true;
                 }
-                if (!hasConflict && conflictGroup3.includes(distractorId) && currentOptionIds.some(id => conflictGroup3.includes(id))) {
+                if (!hasConflict && conflictGroup3.includes(distractorId) && currentOptionIds.some(id => conflictGroup3.includes(id))) { 
                     hasConflict = true;
                 }
 
@@ -1069,6 +1098,7 @@
             stopIcon.style.display = 'none';
         }
 
+        /* === YENİ DEĞİŞİKLİK: Zamanlayıcı animasyonunu durdurma eklendi === */
         function handleAnswer(e) {
             const playerSection = e.currentTarget.closest('.player-section');
             const player = playerSection.id === 'player1-section' ? 'player1' : 'player2';
@@ -1092,6 +1122,7 @@
             if (state.answers.player1 !== null && state.answers.player2 !== null) {
                 state.isAnswered = true;
                 clearTimeout(state.roundTimer);
+                roundTimerBar.style.animationPlayState = 'paused'; // <--- DÜZELTME EKLENDİ
                 stopAudioLoop();
                 processAnswers();
             }
@@ -1171,24 +1202,22 @@
 
             updateScores();
 
-            setTimeout(nextRoundAndAutoPlay, 3000);
+            setTimeout(() => {
+                if (state.currentRound >= state.totalRounds && !state.isMatchOver) {
+                    endMatch();
+                } else if (!state.isMatchOver) {
+                    nextRoundButton.style.display = 'block'; 
+                }
+            }, 3000);
         }
 
+        /* === YENİ DEĞİŞİKLİK: Zamanlayıcı animasyonunu durdurma eklendi === */
         function handleTimeout() {
             if (state.isAnswered || state.isMatchOver) return;
             state.isAnswered = true;
+            roundTimerBar.style.animationPlayState = 'paused'; // <--- DÜZELTME EKLENDİ
             stopAudioLoop();
             processAnswers();
-        }
-
-        function nextRoundAndAutoPlay() {
-            if (state.isMatchOver) return;
-
-            nextRound();
-
-            if (!state.isMatchOver && state.currentRound <= state.totalRounds) {
-                toggleAudio();
-            }
         }
 
         function animateScore(sourceElement, player) {
@@ -1255,12 +1284,11 @@
         }
 
         
-        /* === YENİ DEĞİŞİKLİK: Arka planı şeffaf yapma komutu kaldırıldı === */
         function resetForNewGame(){
             resetButton.style.display = 'none';
             playerSelectPrompt.style.display = 'flex'; 
             winnerDisplay.style.display = 'none';
-            // overlay.classList.add('transparent-bg'); // <--- SİLİNDİ (Beyaz Arka Plan)
+            // overlay.classList.add('transparent-bg'); // Arka planı beyaz tutmak için kaldırıldı
             progressDots.forEach(dot => dot.classList.remove('active'));
 
             celebrationP1.classList.remove('show');
@@ -1303,6 +1331,18 @@
 
         allImageContainers.forEach(container => {
             container.addEventListener('click', handleAnswer);
+        });
+
+        nextRoundButton.addEventListener('click', () => {
+            if (state.isMatchOver) return;
+
+            nextRoundButton.style.display = 'none'; 
+            
+            nextRound();
+            
+            if (!state.isMatchOver && state.currentRound <= state.totalRounds) {
+                toggleAudio();
+            }
         });
 
         runIntroAnimation();
