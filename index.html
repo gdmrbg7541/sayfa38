@@ -583,7 +583,7 @@
             <div id="progress-bar">
                 <div class="progress-dot dot-small"></div>
                 <div class="progress-dot dot-medium"></div>
-                <div class.progress-dot"></div>
+                <div class="progress-dot"></div>
                 <div class="progress-dot dot-medium"></div>
                 <div class="progress-dot dot-small"></div>
             </div>
@@ -638,7 +638,7 @@
             <div id="winner-display"></div>
 
             <div id="player-select-prompt">
-                <div id="player-select-text">اختر لاعبين</div>
+                <div id="player-select-text">اِخْتَرْ لاعِبَيْن</div>
                 <button id="start-countdown-button">👥</button>
             </div>
             <button class="overlay-button" id="start-button">اِبْدَأْ</button>
@@ -893,9 +893,7 @@
 
             const conflictGroup1 = [1, 4, 5, 6];
             const conflictGroup2 = [7, 8];
-            
-            // === YENİ DEĞİŞİKLİK: 10 eklendi ===
-            const conflictGroup3 = [2, 3, 10]; 
+            const conflictGroup3 = [2, 3, 10]; // 10 eklendi
 
             let possibleDistractors = gameData.filter(item => {
                 const id = item.id;
@@ -1098,7 +1096,6 @@
             stopIcon.style.display = 'none';
         }
 
-        /* === YENİ DEĞİŞİKLİK: Zamanlayıcı animasyonunu durdurma eklendi === */
         function handleAnswer(e) {
             const playerSection = e.currentTarget.closest('.player-section');
             const player = playerSection.id === 'player1-section' ? 'player1' : 'player2';
@@ -1122,7 +1119,7 @@
             if (state.answers.player1 !== null && state.answers.player2 !== null) {
                 state.isAnswered = true;
                 clearTimeout(state.roundTimer);
-                roundTimerBar.style.animationPlayState = 'paused'; // <--- DÜZELTME EKLENDİ
+                roundTimerBar.style.animationPlayState = 'paused'; // Zaman çubuğu animasyonunu durdur
                 stopAudioLoop();
                 processAnswers();
             }
@@ -1211,11 +1208,10 @@
             }, 3000);
         }
 
-        /* === YENİ DEĞİŞİKLİK: Zamanlayıcı animasyonunu durdurma eklendi === */
         function handleTimeout() {
             if (state.isAnswered || state.isMatchOver) return;
             state.isAnswered = true;
-            roundTimerBar.style.animationPlayState = 'paused'; // <--- DÜZELTME EKLENDİ
+            roundTimerBar.style.animationPlayState = 'paused'; // Zaman çubuğu animasyonunu durdur
             stopAudioLoop();
             processAnswers();
         }
@@ -1252,6 +1248,7 @@
             score2Display.textContent = state.scores.player2;
         }
 
+        /* === DEĞİŞİKLİK: Harekeli kazanan metinleri === */
         function endMatch() {
             if(state.isMatchOver) return;
             state.isMatchOver = true;
@@ -1259,15 +1256,15 @@
             clearTimeout(state.roundTimer);
 
             if (state.scores.player1 > state.scores.player2) {
-                winnerDisplay.textContent = "🏆 اللاعب 1 فاز! 🏆";
+                winnerDisplay.textContent = "🏆 اللّاعِب ١ فاز! 🏆"; // Harekeli
                 winnerDisplay.style.color = 'var(--player1-bg)';
                 celebrationP1.classList.add('show');
             } else if (state.scores.player2 > state.scores.player1) {
-                winnerDisplay.textContent = "🏆 اللاعب 2 فاز! 🏆";
+                winnerDisplay.textContent = "🏆 اللّاعِب ٢ فاز! 🏆"; // Harekeli
                 winnerDisplay.style.color = 'var(--player2-bg)';
                 celebrationP2.classList.add('show');
             } else {
-                winnerDisplay.textContent = "🤝 !تعادل 🤝";
+                winnerDisplay.textContent = "🤝 !التَّعادُل 🤝"; // Harekeli
                 winnerDisplay.style.color = 'var(--dark-text)';
                 celebrationP1.classList.add('show');
                 celebrationP2.classList.add('show');
